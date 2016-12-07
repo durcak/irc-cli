@@ -45,5 +45,4 @@ class ApiHelper
   def prepare_url(parameter)
 	"#{URL}#{parameter}"
   end
-
 end
