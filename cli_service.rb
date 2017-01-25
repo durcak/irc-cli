@@ -2,6 +2,7 @@
 
 require "slop"
 require "./api_helper"
+require "./format_helper.rb"
 
 # Cli service
 # Aplication reacts to ARGV arguments, downloads and shows data from https://api.mtgjester.com API
@@ -11,26 +12,28 @@ require "./api_helper"
 # #example ./cli_service.rb -h
 # #see ApiHelper#before
 module CLI_SERVICE
-  opts = Slop.parse do |o|
+  include ApiHelper
+  include FormatHelper
 
-	o.string '-u', '--uuid', 'Show card with specific ID.'
-	o.string '-f', '--find', 'Search cards by kezywords.'
-	o.integer '-l', '--limit', 'Set max number of return cards, default = 5.', default: 5
-	o.on '-h', '--help', 'Show help.'
+  opts = Slop.parse do |o|
+  	o.string '-u', '--uuid', 'Show card with specific ID.'
+  	o.string '-f', '--find', 'Search cards by kezywords.'
+  	o.integer '-l', '--limit', 'Set max number of return cards, default = 5.', default: 5
+  	o.on '-h', '--help', 'Show help.'
   end
 
   # Print ApiHelper output in table format acording to given id 
   if opts[:u]
-	puts ApiHelper.new.table_string ApiHelper.new.download_data(opts[:u]), opts[:limit]
+    puts FormatHelper.table_string ApiHelper.download_data(opts[:u]), opts[:limit]
   end
 
   # Print ApiHelper output in table format acording to given keyword 
   if opts[:f]
-	puts ApiHelper.new.table_string ApiHelper.new.download_data("search?query=#{opts[:f]}"), opts[:limit]
+    puts FormatHelper.table_string ApiHelper.download_data("search?query=#{opts[:f]}"), opts[:limit]
   end
 
   # Print help
   if opts[:h]
-	puts opts
+    puts opts
   end
 end
